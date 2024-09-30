@@ -1,0 +1,134 @@
+// The Token Manager:
+// You are developing a user authentication system, and you need to manage user authentication tokens. Implement a function named setAuthToken that takes an authentication token and sets it in localStorage with an expiration time.
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Token Manager</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .message {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Token Manager</h1>
+
+        <label for="token">Authentication Token:</label>
+        <input type="text" id="token" placeholder="Enter token">
+
+        <label for="expiration">Expiration (in minutes):</label>
+        <input type="number" id="expiration" placeholder="Enter expiration time">
+
+        <button onclick="saveToken()">Set Auth Token</button>
+        <button onclick="checkToken()">Check Auth Token</button>
+
+        <div class="message" id="message"></div>
+    </div>
+
+    <script>
+        // Function to set the auth token with an expiration time in localStorage
+        function setAuthToken(token, expirationMinutes) {
+            const expirationTime = new Date().getTime() + expirationMinutes * 60000; // Convert minutes to milliseconds
+
+            const tokenData = {
+                value: token,
+                expiration: expirationTime
+            };
+
+            localStorage.setItem('authToken', JSON.stringify(tokenData));
+        }
+
+        // Function to retrieve the token from localStorage and check if it is valid
+        function getAuthToken() {
+            const tokenData = JSON.parse(localStorage.getItem('authToken'));
+
+            if (tokenData) {
+                const currentTime = new Date().getTime();
+                if (currentTime < tokenData.expiration) {
+                    return tokenData.value; // Token is valid
+                } else {
+                    localStorage.removeItem('authToken'); // Token expired, remove it
+                    return null; // Token is expired
+                }
+            }
+
+            return null; // No token found
+        }
+
+        // Function to save the token from input fields
+        function saveToken() {
+            const token = document.getElementById('token').value;
+            const expiration = document.getElementById('expiration').value;
+
+            if (token && expiration) {
+                setAuthToken(token, parseInt(expiration));
+                document.getElementById('message').textContent = "Token saved successfully!";
+            } else {
+                document.getElementById('message').textContent = "Please enter both token and expiration time!";
+            }
+        }
+
+        // Function to check and display the token status
+        function checkToken() {
+            const token = getAuthToken();
+
+            if (token) {
+                document.getElementById('message').textContent = `Token is valid: ${token}`;
+            } else {
+                document.getElementById('message').textContent = "Token is either expired or not set!";
+            }
+        }
+    </script>
+
+</body>
+</html>
